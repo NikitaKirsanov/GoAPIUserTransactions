@@ -4,6 +4,7 @@ import (
 	"KirsanovStavkaTV/internal/constants"
 	"KirsanovStavkaTV/internal/contracts"
 	"KirsanovStavkaTV/internal/db"
+	"KirsanovStavkaTV/server"
 	"os"
 )
 
@@ -19,4 +20,6 @@ func main() {
 	}
 	dbProvider.Provide()
 
+	service := server.NewService(dbProvider)
+	server.NewServer(service)
 }
