@@ -19,6 +19,10 @@ services:
 
   postgresdb:
     image: postgres:latest
+    networks:
+      new:
+        aliases:
+          - database
     container_name: postgresdb
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
@@ -30,6 +34,16 @@ services:
     volumes:
       - ./pg_data:/var/lib/postgresql/data
     restart: always  
+
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - .:/migrations
+    command: ["-path", "/migrations/migrations", "-database",  "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable", "up", "3"]
+    links: 
+      - postgresdb
+    depends_on:
+      - postgresdb
 
   redis:
     image: redis:6.2-alpine
@@ -43,3 +57,6 @@ volumes:
     driver: local
   redis:
     driver: local
+
+networks:
+      new:
