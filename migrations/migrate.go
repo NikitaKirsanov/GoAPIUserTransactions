@@ -11,7 +11,6 @@ import (
 	"strconv"
 	"time"
 
-	_ "github.com/carprice-tech/migorm/example/migrations"
 	"github.com/golang-migrate/migrate"
 	_ "github.com/lib/pq"
 	redis "github.com/redis/go-redis/v9"
