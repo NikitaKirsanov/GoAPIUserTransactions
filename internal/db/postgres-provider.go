@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"time"
 
 	postgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -23,7 +22,7 @@ func (p PostgresProvider) Provide() {
 	dbPort := os.Getenv("POSTGRES_PORT")
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", dbHost, dbUser, dbPassword, dbName, dbPort)
-	DB, err := p.connect(dsn)
+	DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
@@ -31,16 +30,6 @@ func (p PostgresProvider) Provide() {
 	p.DB = DB
 }
 
-func (p PostgresProvider) connect(dsn string) (*gorm.DB, error) {
-	for i := 0; i < 5; i++ {
-		DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-		if err == nil {
-			return DB, nil
-		}
-		time.Sleep(time.Second)
-	}
-	return nil, errors.New("dial err")
-}
 func (p PostgresProvider) FindUser(id int) models.User {
 	userFrom := &models.User{}
 	p.DB.Find(userFrom, id)
