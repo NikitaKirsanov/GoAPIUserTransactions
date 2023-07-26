@@ -5,6 +5,7 @@ import (
 	"KirsanovStavkaTV/internal/contracts"
 	"KirsanovStavkaTV/internal/db"
 	"KirsanovStavkaTV/server"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -28,4 +29,5 @@ func main() {
 	service := server.NewService(dbProvider)
 	//migrations.Migrate()
 	server.NewServer(service)
+	fmt.Println("Server started")
 }
