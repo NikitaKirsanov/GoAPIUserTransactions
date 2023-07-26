@@ -28,5 +28,4 @@ func main() {
 	service := server.NewService(dbProvider)
 	//migrations.Migrate()
 	server.NewServer(service)
-
 }
