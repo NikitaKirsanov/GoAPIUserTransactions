@@ -31,12 +31,14 @@ func Migrate() {
 			dbPort,
 			dbName)
 		m, err := migrate.New(
-			"file:///migrations",
+			"file://migrations/migrations/migrations/migrations/000001_init_mg.up.sql",
 			url)
 		if err != nil {
 			panic(fmt.Sprintf("Couldn't migrate users err:%s", err))
 		}
-		m.Steps(2)
+		if err := m.Up(); err != nil {
+			panic(fmt.Sprintf("Couldn't migrate users err:%s", err))
+		}
 
 	case constants.DBTypeRedis:
 		randBalanceOne := uint(rand.Uint64())
