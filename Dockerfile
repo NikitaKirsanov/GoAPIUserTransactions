@@ -13,7 +13,5 @@ COPY .env .
 RUN go get -d -v ./...
 RUN go install -v ./...
 
-RUN go get github.com/githubnemo/CompileDaemon
-RUN go get -v golang.org/x/tools/gopls
-
-ENTRYPOINT CompileDaemon --build="go build -a -installsuffix cgo -o main ." --command=./main
+EXPOSE 8080
+CMD [ "/app/main" ]
