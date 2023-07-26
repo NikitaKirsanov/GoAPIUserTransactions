@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/golang-migrate/migrate"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
 	redis "github.com/redis/go-redis/v9"
 )
