@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,6 +12,6 @@ func NewServer(s *Service) {
 
 	r.HandleFunc("/users", s.GetUsers).Methods("GET")
 	r.HandleFunc("/transfer", s.MakeTransfer).Methods("POST")
-
-	http.ListenAndServe(":8000", r)
+	fmt.Println("Server started")
+	http.ListenAndServe(":8080", r)
 }
