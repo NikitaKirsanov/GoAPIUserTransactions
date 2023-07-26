@@ -8,14 +8,11 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"path"
-	"runtime"
 	"strconv"
 	"time"
 
-	"github.com/carprice-tech/migorm"
 	_ "github.com/carprice-tech/migorm/example/migrations"
-	"github.com/jinzhu/gorm"
+	"github.com/golang-migrate/migrate"
 	_ "github.com/lib/pq"
 	redis "github.com/redis/go-redis/v9"
 )
@@ -48,19 +45,21 @@ func Migrate() {
 		dbUser := os.Getenv("POSTGRES-USER")
 		dbPassword := os.Getenv("POSTGRES-PASSWORD")
 		dbPort := os.Getenv("POSTGRES-PORT")
-		dsn := fmt.Sprintf("host=%s user=%s password= dbname=%s port=%s", dbHost, dbUser, dbPassword, dbPort)
-		DB, err := gorm.Open("postgres", dsn)
+		dbName := os.Getenv("POSTGRES_DB")
+		url := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
+			dbUser,
+			dbPassword,
+			dbHost,
+			dbPort,
+			dbName)
+		m, err := migrate.New(
+			"file:///migrations",
+			url)
 		if err != nil {
-			panic(err)
+			panic("Couldn't migrate users")
 		}
+		m.Steps(2)
 
-		migrater := migorm.NewMigrater(DB)
-
-		_, file, _, _ := runtime.Caller(0)
-		curDir := path.Dir(file)
-		migrater.Conf().MigrationsDir = curDir + "/../migrations"
-
-		migorm.Run(migrater)
 	case constants.DBTypeRedis:
 		randBalanceOne := uint(rand.Uint64())
 		randBalanceTwo := uint(rand.Uint64())
