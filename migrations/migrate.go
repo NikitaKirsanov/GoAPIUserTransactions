@@ -36,7 +36,7 @@ func Migrate() {
 			dbPort,
 			dbName)
 		m, err := migrate.New(
-			fmt.Sprintf("github://NikitaKirsanov:%s@StavkaTV/migrations/migrations", token),
+			"file://migrations/migrations",
 			url)
 		if err != nil {
 			panic(fmt.Sprintf("Couldn't migrate users err:%s", err))
