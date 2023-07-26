@@ -165,7 +165,7 @@ func (r RedisProvider) MakeTransfer(t *models.Transaction) error {
 		return err
 	})
 	if err != nil {
-		return fmt.Errorf("create: transaction: %w", err)
+		return errors.New("Saving transaction failed, try again later")
 	}
 
 	return nil

@@ -1,4 +1,4 @@
-package main
+package migrations
 
 import (
 	"KirsanovStavkaTV/internal/constants"
@@ -16,9 +16,31 @@ import (
 	"github.com/carprice-tech/migorm"
 	_ "github.com/carprice-tech/migorm/example/migrations"
 	"github.com/jinzhu/gorm"
+	_ "github.com/lib/pq"
 	redis "github.com/redis/go-redis/v9"
 )
 
+/*
+func main() {
+	dbHost := os.Getenv("POSTGRES-HOST")
+	dbUser := os.Getenv("POSTGRES-USER")
+	dbPassword := os.Getenv("POSTGRES-PASSWORD")
+	dbPort := os.Getenv("POSTGRES-PORT")
+	dsn := fmt.Sprintf("host=%s user=%s password= dbname=%s port=%s", dbHost, dbUser, dbPassword, dbPort)
+	DB, err := gorm.Open("postgres", dsn)
+	if err != nil {
+		panic(err)
+	}
+
+	migrater := migorm.NewMigrater(DB)
+
+	_, file, _, _ := runtime.Caller(0)
+	curDir := path.Dir(file)
+	migrater.Conf().MigrationsDir = curDir + "/../migrations"
+
+	migorm.Run(migrater)
+}
+*/
 func Migrate() {
 	switch conn := os.Getenv("DB-TYPE"); conn {
 	case constants.DBTypePostgres:
