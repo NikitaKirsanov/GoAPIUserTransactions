@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	postgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,9 +19,17 @@ func (p PostgresProvider) Provide() {
 	dbHost := os.Getenv("POSTGRES_HOST")
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_DB")
 	dbPort := os.Getenv("POSTGRES_PORT")
-	dsn := fmt.Sprintf("host=%s user=%s password= dbname=%s port=%s", dbHost, dbUser, dbPassword, dbPort)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", dbHost, dbUser, dbPassword, dbName, dbPort)
 	DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	for i := 0; i < 5; i++ {
+		DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		if err == nil {
+			break
+		}
+		time.Sleep(1 * time.Second) // change back to 10s
+	}
 	if err != nil {
 		panic(err)
 	}
