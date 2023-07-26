@@ -18,7 +18,6 @@ func main() {
 	switch conn := os.Getenv("DB_TYPE"); conn {
 	case constants.DBTypePostgres:
 		dbProvider = &db.PostgresProvider{}
-		break
 	case constants.DBTypeRedis:
 		dbProvider = &db.RedisProvider{}
 	default:
