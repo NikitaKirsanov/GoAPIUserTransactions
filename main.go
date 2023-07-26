@@ -10,7 +10,6 @@ import (
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	_ "github.com/mattes/migrate/source/file"
 )
 
 func main() {
