@@ -5,7 +5,6 @@ import (
 	"KirsanovStavkaTV/internal/contracts"
 	"KirsanovStavkaTV/internal/db"
 	"KirsanovStavkaTV/server"
-	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -29,5 +28,4 @@ func main() {
 	service := server.NewService(dbProvider)
 	//migrations.Migrate()
 	server.NewServer(service)
-	http.ListenAndServe(":8080", r)
 }
