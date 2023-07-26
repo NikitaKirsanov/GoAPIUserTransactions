@@ -28,7 +28,6 @@ func Migrate() {
 		dbPassword := os.Getenv("POSTGRES_PASSWORD")
 		dbPort := os.Getenv("POSTGRES_PORT")
 		dbName := os.Getenv("POSTGRES_DB")
-		token := os.Getenv("TOKEN")
 		url := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 			dbUser,
 			dbPassword,
