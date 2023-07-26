@@ -16,34 +16,13 @@ import (
 	redis "github.com/redis/go-redis/v9"
 )
 
-/*
-func main() {
-	dbHost := os.Getenv("POSTGRES-HOST")
-	dbUser := os.Getenv("POSTGRES-USER")
-	dbPassword := os.Getenv("POSTGRES-PASSWORD")
-	dbPort := os.Getenv("POSTGRES-PORT")
-	dsn := fmt.Sprintf("host=%s user=%s password= dbname=%s port=%s", dbHost, dbUser, dbPassword, dbPort)
-	DB, err := gorm.Open("postgres", dsn)
-	if err != nil {
-		panic(err)
-	}
-
-	migrater := migorm.NewMigrater(DB)
-
-	_, file, _, _ := runtime.Caller(0)
-	curDir := path.Dir(file)
-	migrater.Conf().MigrationsDir = curDir + "/../migrations"
-
-	migorm.Run(migrater)
-}
-*/
 func Migrate() {
-	switch conn := os.Getenv("DB-TYPE"); conn {
+	switch conn := os.Getenv("DB_TYPE"); conn {
 	case constants.DBTypePostgres:
-		dbHost := os.Getenv("POSTGRES-HOST")
-		dbUser := os.Getenv("POSTGRES-USER")
-		dbPassword := os.Getenv("POSTGRES-PASSWORD")
-		dbPort := os.Getenv("POSTGRES-PORT")
+		dbHost := os.Getenv("POSTGRES_HOST")
+		dbUser := os.Getenv("POSTGRES_USER")
+		dbPassword := os.Getenv("POSTGRES_PASSWORD")
+		dbPort := os.Getenv("POSTGRES_PORT")
 		dbName := os.Getenv("POSTGRES_DB")
 		url := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 			dbUser,
@@ -105,6 +84,6 @@ func Migrate() {
 		}
 		fmt.Println(fmt.Sprintf("Added 1 user during migration user:%s", resTwo))
 	default:
-		panic("uncnown db type")
+		panic("unknown db type")
 	}
 }
