@@ -5,8 +5,11 @@ import (
 	"KirsanovStavkaTV/internal/models"
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	redis "github.com/redis/go-redis/v9"
 )
@@ -100,43 +103,61 @@ func (r RedisProvider) MakeTransfer(t *models.Transaction) error {
 
 	t.Id = transactionId
 
-	/**
-	*
-	*
-	* Продолжить отсюда
-	*
-	*
-	err := a.rds.Watch(ctx, func(tx *redis.Tx) error {
-		// You can run more commands here. You will use `tx` though.
-		// e.g. tx.HGET()
-		// Note: `tx` is not part of transactional `pipe` below so any "SET" operation will be independent.
-
-		_, err := tx.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
-			// 1- Set holder
-			if _, err := pipe.HSetNX(
+	userFromMarshalled, err := json.Marshal(userFrom)
+	if err != nil {
+		return err
+	}
+	userToMarshalled, err := json.Marshal(userTo)
+	if err != nil {
+		return err
+	}
+	transactionMarshalled, err := json.Marshal(t)
+	if err != nil {
+		return err
+	}
+	err = r.DB.Watch(ctx, func(tx *redis.Tx) error {
+		transactionExists, err := tx.Exists(ctx, constants.RedisTransactionPrifix+fmt.Sprint(t.Id)).Result()
+		if err != nil {
+			return err
+		}
+		if transactionExists != 0 {
+			return errors.New("Transaction already exists, contact N.Kirsanov")
+		}
+		_, err = tx.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
+			if _, err = pipe.Del(
 				ctx,
-				account.CacheHashRootKey(holder.ID),
-				account.CacheHashHolderField(),
-				&holder,
+				constants.RedisUserPrefix+fmt.Sprint(userFrom.Id),
+				constants.RedisUserPrefix+fmt.Sprint(userTo.Id),
 			).Result(); err != nil {
-				return fmt.Errorf("create: holder: %w", err)
+				return err
 			}
-			//tx.Expire()
-			//
 
-			// 2- Set accounts within holder
-			for _, acc := range accounts {
-				if _, err := pipe.HSetNX(
-					ctx,
-					account.CacheHashRootKey(holder.ID),
-					account.CacheHashAccountField(acc.Type),
-					acc,
-				).Result(); err != nil {
-					return fmt.Errorf("create: account: %w", err)
-				}
-				//pipe.Expire()
+			if _, err = pipe.Set(
+				ctx,
+				constants.RedisUserPrefix+fmt.Sprint(userFrom.Id),
+				string(userFromMarshalled),
+				time.Duration(time.Duration.Hours(24)),
+			).Result(); err != nil {
+				return err
 			}
-			//
+
+			if _, err = pipe.Set(
+				ctx,
+				constants.RedisUserPrefix+fmt.Sprint(userTo.Id),
+				string(userToMarshalled),
+				time.Duration(time.Duration.Hours(24)),
+			).Result(); err != nil {
+				return err
+			}
+
+			if _, err = pipe.Set(
+				ctx,
+				constants.RedisTransactionPrifix+fmt.Sprint(t.Id),
+				string(transactionMarshalled),
+				time.Duration(time.Duration.Hours(24)),
+			).Result(); err != nil {
+				return err
+			}
 
 			return nil
 		})
@@ -146,7 +167,6 @@ func (r RedisProvider) MakeTransfer(t *models.Transaction) error {
 	if err != nil {
 		return fmt.Errorf("create: transaction: %w", err)
 	}
-	*/
 
 	return nil
 }

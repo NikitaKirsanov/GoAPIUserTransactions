@@ -1,0 +1,58 @@
+version: '3.9'
+services:
+  app:
+    container_name: stavkatv
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${POSTGRES_HOST}
+      - DATABASE_PORT=${POSTGRES_PORT}
+    tty: true
+    build: .
+    ports:
+      - 8000:8080
+    restart: on-failure
+    volumes:
+      - .:/app
+    depends_on:
+      - postgresdb
+      - redis
+    links:
+      - postgresdb
+      - redis
+    volumes:
+      - ./:/src
+
+  postgresdb:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+    ports:
+      - '1234:5432'
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    networks:
+      - learning
+
+  redis:
+    image: redis:6.2-alpine
+    restart: on-failure
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    
+
+volumes: 
+  db:
+    driver: local
+  cache:
+    driver: local
+
+networks:
+  learning:
+    driver: bridge

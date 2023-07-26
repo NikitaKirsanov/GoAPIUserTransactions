@@ -15,10 +15,10 @@ type PostgresProvider struct {
 }
 
 func (p PostgresProvider) Provide() {
-	dbHost := os.Getenv("POSTGRES-HOST")
-	dbUser := os.Getenv("POSTGRES-USER")
-	dbPassword := os.Getenv("POSTGRES-PASSWORD")
-	dbPort := os.Getenv("POSTGRES-PORT")
+	dbHost := os.Getenv("POSTGRES_HOST")
+	dbUser := os.Getenv("POSTGRES_USER")
+	dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	dbPort := os.Getenv("POSTGRES_PORT")
 	dsn := fmt.Sprintf("host=%s user=%s password= dbname=%s port=%s", dbHost, dbUser, dbPassword, dbPort)
 	DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
