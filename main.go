@@ -6,7 +6,6 @@ import (
 	"KirsanovStavkaTV/internal/db"
 	migrations "KirsanovStavkaTV/migrations"
 	"KirsanovStavkaTV/server"
-	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -14,11 +13,12 @@ import (
 
 func main() {
 	godotenv.Load(".env")
-	fmt.Println(os.Getenv("DB_TYPE"))
+
 	var dbProvider contracts.DatabaseProvider
 	switch conn := os.Getenv("DB_TYPE"); conn {
 	case constants.DBTypePostgres:
 		dbProvider = &db.PostgresProvider{}
+		break
 	case constants.DBTypeRedis:
 		dbProvider = &db.RedisProvider{}
 	default:
