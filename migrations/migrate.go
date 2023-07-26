@@ -34,7 +34,7 @@ func Migrate() {
 			"file:///migrations",
 			url)
 		if err != nil {
-			panic("Couldn't migrate users")
+			panic(fmt.Sprintf("Couldn't migrate users err:%s", err))
 		}
 		m.Steps(2)
 
