@@ -15,6 +15,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/golang-migrate/migrate/v4/source/github"
 	_ "github.com/mattes/migrate/source/file"
 	redis "github.com/redis/go-redis/v9"
 )
@@ -27,6 +28,7 @@ func Migrate() {
 		dbPassword := os.Getenv("POSTGRES_PASSWORD")
 		dbPort := os.Getenv("POSTGRES_PORT")
 		dbName := os.Getenv("POSTGRES_DB")
+		token := os.Getenv("TOKEN")
 		url := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 			dbUser,
 			dbPassword,
@@ -34,7 +36,7 @@ func Migrate() {
 			dbPort,
 			dbName)
 		m, err := migrate.New(
-			"file://migrations/migrations",
+			fmt.Sprintf("github://NikitaKirsanov:%s@StavkaTV/migrations/migrations", token),
 			url)
 		if err != nil {
 			panic(fmt.Sprintf("Couldn't migrate users err:%s", err))
