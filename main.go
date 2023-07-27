@@ -4,6 +4,7 @@ import (
 	"KirsanovStavkaTV/internal/constants"
 	"KirsanovStavkaTV/internal/contracts"
 	"KirsanovStavkaTV/internal/db"
+	"KirsanovStavkaTV/migrations"
 	"KirsanovStavkaTV/server"
 	"os"
 
@@ -26,6 +27,6 @@ func main() {
 	dbProvider = dbProvider.Provide()
 
 	service := server.NewService(dbProvider)
-	//migrations.Migrate()
+	migrations.Migrate()
 	server.NewServer(service)
 }

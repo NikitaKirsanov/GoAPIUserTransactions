@@ -20,6 +20,7 @@ type RedisProvider struct {
 }
 
 func (r RedisProvider) Provide() contracts.DatabaseProvider {
+	fmt.Println(os.Getenv("REDIS-DB"))
 	redisAddr := os.Getenv("REDIS-ADDR")
 	redisPassword := os.Getenv("REDIS-PASSWORD")
 	redisDB, err := strconv.Atoi(os.Getenv("REDIS-DB"))

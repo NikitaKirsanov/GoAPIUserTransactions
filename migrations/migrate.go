@@ -25,7 +25,6 @@ func Migrate() {
 	case constants.DBTypeRedis:
 		randBalanceOne := uint(rand.Uint64())
 		randBalanceTwo := uint(rand.Uint64())
-		createdAt := time.Now()
 		userOne := models.User{
 			Id:      1,
 			Balance: randBalanceOne,
