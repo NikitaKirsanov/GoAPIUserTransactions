@@ -1,4 +1,4 @@
-package main
+package stavkatv
 
 import (
 	"KirsanovStavkaTV/internal/constants"
