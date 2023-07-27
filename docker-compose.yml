@@ -31,20 +31,28 @@ services:
       - ./pg_data:/var/lib/postgresql/data
     restart: always  
     healthcheck:
-      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
-      interval: 10s
-      timeout: 3s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
       retries: 5
 
   migrate:
     image: migrate/migrate
     volumes:
       - .:/migrations/migrations
-    command: ["-path", "/migrations/migrations", "-database",  "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresdb:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable", "up", "3"]
-    links: 
-      - postgresdb
+    entrypoint:
+      [
+        "migrate",
+        "-path",
+        "/migrations",
+        "-database",
+        "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresdb:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable",
+      ]
+    command: ["up"]
     depends_on:
-      - postgresdb
+      db:
+        condition: service_healthy
+    restart: on-failure
 
   redis:
     image: redis:6.2-alpine
