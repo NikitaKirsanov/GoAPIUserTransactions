@@ -33,15 +33,13 @@ func Migrate() {
 			Id:      2,
 			Balance: randBalanceTwo,
 		}
-		redisAddr := os.Getenv("REDIS-ADDR")
-		redisPassword := os.Getenv("REDIS-PASSWORD")
-		redisDB, err := strconv.Atoi(os.Getenv("REDIS-DB"))
+		redisDB, err := strconv.Atoi(os.Getenv("REDIS_DB"))
 		if err != nil {
-			panic("could't convert reddis DB to type int")
+			panic(fmt.Sprintf("could't convert redis DB to type int %s, err: %s", os.Getenv("REDIS_DB"), err))
 		}
 		DB := redis.NewClient(&redis.Options{
-			Addr:     redisAddr,
-			Password: redisPassword,
+			Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
+			Password: os.Getenv("REDIS_PASSWORD"),
 			DB:       redisDB,
 		})
 		userOneJson, err := json.Marshal(userOne)
@@ -50,8 +48,9 @@ func Migrate() {
 		}
 		resOne, err := DB.Set(context.Background(), constants.RedisUserPrefix+fmt.Sprint(userOne.Id), string(userOneJson), time.Duration(time.Duration.Hours(24))).Result()
 		if err != nil {
-			panic("couldn't migrate users")
+			panic(fmt.Sprintf("couldn't migrate users err:%s", err))
 		}
+		fmt.Println(fmt.Sprintf("userOne:%s", string(userOneJson)))
 		//Здесь должен быть какой-нибудь логгер, но пока просто пишем в stdOut
 		fmt.Println(fmt.Sprintf("Added 1 user during migration user:%s", resOne))
 
@@ -63,6 +62,7 @@ func Migrate() {
 		if err != nil {
 			panic("couldn't migrate users")
 		}
+		fmt.Println(fmt.Sprintf("userOne:%s", string(userTwoJson)))
 		fmt.Println(fmt.Sprintf("Added 1 user during migration user:%s", resTwo))
 	default:
 		panic("unknown db type")

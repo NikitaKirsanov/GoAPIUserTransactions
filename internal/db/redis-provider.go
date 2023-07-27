@@ -20,14 +20,13 @@ type RedisProvider struct {
 }
 
 func (r RedisProvider) Provide() contracts.DatabaseProvider {
-	fmt.Println(os.Getenv("REDIS-DB"))
-	redisDB, err := strconv.Atoi(os.Getenv("REDIS-DB"))
+	redisDB, err := strconv.Atoi(os.Getenv("REDIS_DB"))
 	if err != nil {
-		panic("could't convert reddis DB to type int")
+		panic(fmt.Sprintf("could't convert redis DB to type int %s, err: %s", os.Getenv("REDIS_DB"), err))
 	}
 	r.DB = redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS-ADDR"),
-		Password: os.Getenv("REDIS-PASSWORD"),
+		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
+		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       redisDB,
 	})
 
@@ -47,14 +46,19 @@ func (r RedisProvider) FindUser(id int) models.User {
 }
 
 func (r RedisProvider) GetUsers() []models.User {
+	ctx := context.Background()
 	users := []models.User{}
-	redisResult, err := r.DB.Keys(context.Background(), constants.RedisUserPrefix+"*").Result()
+	redisResult, err := r.DB.Keys(ctx, constants.RedisUserPrefix+"*").Result()
 	if err != nil {
 		panic(err)
 	}
 	for _, key := range redisResult {
+		userStr, err := r.DB.Get(ctx, key).Result()
+		if err != nil {
+			panic(err)
+		}
 		user := models.User{}
-		json.Unmarshal([]byte(key), &user)
+		json.Unmarshal([]byte(userStr), &user)
 		users = append(users, user)
 	}
 
