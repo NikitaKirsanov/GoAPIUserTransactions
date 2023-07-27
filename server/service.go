@@ -60,5 +60,7 @@ func (s Service) MakeTransfer(w http.ResponseWriter, r *http.Request) {
 	err = s.dbProvider.MakeTransfer(transaction)
 	if err != nil {
 		json.NewEncoder(w).Encode("Couldn't save transaction contact N.Kirsanov")
+	} else {
+		json.NewEncoder(w).Encode("transaction sucsessful")
 	}
 }
