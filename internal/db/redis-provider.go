@@ -21,15 +21,13 @@ type RedisProvider struct {
 
 func (r RedisProvider) Provide() contracts.DatabaseProvider {
 	fmt.Println(os.Getenv("REDIS-DB"))
-	redisAddr := os.Getenv("REDIS-ADDR")
-	redisPassword := os.Getenv("REDIS-PASSWORD")
 	redisDB, err := strconv.Atoi(os.Getenv("REDIS-DB"))
 	if err != nil {
 		panic("could't convert reddis DB to type int")
 	}
 	r.DB = redis.NewClient(&redis.Options{
-		Addr:     redisAddr,
-		Password: redisPassword,
+		Addr:     os.Getenv("REDIS-ADDR"),
+		Password: os.Getenv("REDIS-PASSWORD"),
 		DB:       redisDB,
 	})
 
