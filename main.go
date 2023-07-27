@@ -23,7 +23,7 @@ func main() {
 	default:
 		panic("unknown db type")
 	}
-	dbProvider.Provide()
+	dbProvider = dbProvider.Provide()
 
 	service := server.NewService(dbProvider)
 	//migrations.Migrate()

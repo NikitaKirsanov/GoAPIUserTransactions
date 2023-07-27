@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-
-	"github.com/gorilla/mux"
 )
 
 type Service struct {
@@ -28,24 +26,27 @@ func (s Service) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s Service) MakeTransfer(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
 	w.Header().Set("Content-Type", "application/json")
 
-	if params["UserFrom"] == "" || params["UserTo"] == "" || params["Amount"] == "" {
+	reqUserFrom := r.FormValue("UserFrom")
+	reqUserTo := r.FormValue("UserTo")
+	reqAmount := r.FormValue("Amount")
+
+	if reqUserFrom == "" || reqUserTo == "" || reqAmount == "" {
 		json.NewEncoder(w).Encode("Invalid Argument")
 	}
 
-	userFromId, err := strconv.Atoi(params["UserFrom"])
+	userFromId, err := strconv.Atoi(reqUserFrom)
 	if err != nil {
 		json.NewEncoder(w).Encode("Invalid Argument UserFrom")
 	}
 
-	userToId, err := strconv.Atoi(params["UserTo"])
+	userToId, err := strconv.Atoi(reqUserTo)
 	if err != nil {
 		json.NewEncoder(w).Encode("Invalid Argument userFrom")
 	}
 
-	amount64, err := strconv.ParseUint(params["Amount"], 10, 32)
+	amount64, err := strconv.ParseUint(reqAmount, 10, 32)
 	if err != nil {
 		json.NewEncoder(w).Encode("Invalid Argument Amount")
 	}

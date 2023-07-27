@@ -1,11 +1,8 @@
 package models
 
-import "time"
-
 type User struct {
-	Id        int        `gorm:"column:id;primary_key" json:"Id"`
-	Balance   uint       `gorm:"column:balance" json:"Balance"`
-	CreatedAt *time.Time `gorm:"column:created_at;" json:"CreatedAt"`
+	Id      int  `gorm:"column:id;primary_key" json:"Id"`
+	Balance uint `gorm:"column:balance" json:"Balance"`
 }
 
 func (u User) GetId() int {
@@ -14,8 +11,4 @@ func (u User) GetId() int {
 
 func (u User) GetBalance() uint {
 	return u.Balance
-}
-
-func (u User) SetBalance(newBalace uint) {
-	u.Balance = newBalace
 }

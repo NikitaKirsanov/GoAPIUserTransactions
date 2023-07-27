@@ -2,6 +2,7 @@ package db
 
 import (
 	"KirsanovStavkaTV/internal/constants"
+	"KirsanovStavkaTV/internal/contracts"
 	"KirsanovStavkaTV/internal/models"
 	"context"
 	"encoding/json"
@@ -18,7 +19,7 @@ type RedisProvider struct {
 	DB *redis.Client
 }
 
-func (r RedisProvider) Provide() {
+func (r RedisProvider) Provide() contracts.DatabaseProvider {
 	redisAddr := os.Getenv("REDIS-ADDR")
 	redisPassword := os.Getenv("REDIS-PASSWORD")
 	redisDB, err := strconv.Atoi(os.Getenv("REDIS-DB"))
@@ -30,6 +31,8 @@ func (r RedisProvider) Provide() {
 		Password: redisPassword,
 		DB:       redisDB,
 	})
+
+	return r
 }
 
 func (r RedisProvider) FindUser(id int) models.User {
@@ -81,8 +84,8 @@ func (r RedisProvider) MakeTransfer(t *models.Transaction) error {
 		return err
 	}
 
-	userFrom.SetBalance(userFrom.GetBalance() - t.Amount)
-	userTo.SetBalance(userTo.GetBalance() + t.Amount)
+	userFrom.Balance = userFrom.GetBalance() - t.Amount
+	userTo.Balance = userTo.GetBalance() + t.Amount
 
 	transactionRecords, err := r.DB.Keys(ctx, constants.RedisTransactionPrifix+"*").Result()
 	if err != nil {

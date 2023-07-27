@@ -39,18 +39,18 @@ services:
   migrate:
     image: migrate/migrate
     volumes:
-      - .:/migrations/migrations
+      - ./migrations:/migrations
     entrypoint:
       [
         "migrate",
         "-path",
-        "/migrations",
+        "/migrations/migrations",
         "-database",
         "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresdb:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable",
       ]
     command: ["up"]
     depends_on:
-      db:
+      postgresdb:
         condition: service_healthy
     restart: on-failure
 

@@ -11,7 +11,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/golang-migrate/migrate"
 	_ "github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -22,39 +21,18 @@ import (
 func Migrate() {
 	switch conn := os.Getenv("DB_TYPE"); conn {
 	case constants.DBTypePostgres:
-		dbHost := os.Getenv("POSTGRES_HOST")
-		dbUser := os.Getenv("POSTGRES_USER")
-		dbPassword := os.Getenv("POSTGRES_PASSWORD")
-		dbPort := os.Getenv("POSTGRES_PORT")
-		dbName := os.Getenv("POSTGRES_DB")
-		url := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
-			dbUser,
-			dbPassword,
-			dbHost,
-			dbPort,
-			dbName)
-		m, err := migrate.New(
-			"file://migrations/migrations",
-			url)
-		if err != nil {
-			panic(fmt.Sprintf("Couldn't migrate users err:%s", err))
-		}
-		if err := m.Up(); err != nil {
-			panic(fmt.Sprintf("Couldn't migrate users err:%s", err))
-		}
+		break
 	case constants.DBTypeRedis:
 		randBalanceOne := uint(rand.Uint64())
 		randBalanceTwo := uint(rand.Uint64())
 		createdAt := time.Now()
 		userOne := models.User{
-			Id:        1,
-			Balance:   randBalanceOne,
-			CreatedAt: &createdAt,
+			Id:      1,
+			Balance: randBalanceOne,
 		}
 		userTwo := models.User{
-			Id:        2,
-			Balance:   randBalanceTwo,
-			CreatedAt: &createdAt,
+			Id:      2,
+			Balance: randBalanceTwo,
 		}
 		redisAddr := os.Getenv("REDIS-ADDR")
 		redisPassword := os.Getenv("REDIS-PASSWORD")

@@ -1,6 +1,7 @@
 package db
 
 import (
+	"KirsanovStavkaTV/internal/contracts"
 	"KirsanovStavkaTV/internal/models"
 	"errors"
 	"fmt"
@@ -15,7 +16,7 @@ type PostgresProvider struct {
 	DB *gorm.DB
 }
 
-func (p PostgresProvider) Provide() {
+func (p PostgresProvider) Provide() contracts.DatabaseProvider {
 	dbHost := os.Getenv("POSTGRES_HOST")
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
@@ -34,6 +35,8 @@ func (p PostgresProvider) Provide() {
 	}
 
 	p.DB = DB
+
+	return p
 }
 
 func (p PostgresProvider) FindUser(id int) models.User {
@@ -45,7 +48,7 @@ func (p PostgresProvider) FindUser(id int) models.User {
 
 func (p PostgresProvider) GetUsers() []models.User {
 	result := []models.User{}
-	p.DB.Table("users").Take(&result)
+	p.DB.Find(&result)
 	return result
 }
 
@@ -61,10 +64,10 @@ func (p PostgresProvider) MakeTransfer(t *models.Transaction) error {
 	}
 
 	userFromBalance := userFrom.GetBalance() - t.Amount
-	userFrom.SetBalance(userFromBalance)
+	userFrom.Balance = userFromBalance
 
 	userToBalance := userTo.GetBalance() + t.Amount
-	userTo.SetBalance(userToBalance)
+	userTo.Balance = userToBalance
 
 	err := p.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(t).Error; err != nil {
