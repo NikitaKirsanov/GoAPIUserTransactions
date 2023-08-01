@@ -1,4 +1,7 @@
-# StavkaTV
+# GoAPIUserTransactions
+
+This project on start initialises PostgreSQL database and Redis, reads .env file to establish chosen connection and creates 2 users with random positive balace and starts API server.
+Данный проект при старте создает контейнеры с PostgreSQL и Redis, читает .env файл для установки выбранного соединения, в миграции создает 2х пользователей  со случайным положительным балансом и стартует API сервер.
 
 # To start the app local using following commands:
 1) to build the app use "docker compose build"
